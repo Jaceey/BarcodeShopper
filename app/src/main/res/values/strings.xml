@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AndroidCameraPreview</string>
+
+    <string name="err_permission_not_granted">Camera permission is needed.</string>
+    <string name="title_activity_camera_preview">CameraPreviewActivity</string>
+
+    <string name="result_product_not_detected">Product Not Detected</string>
+    <string name="read_product_code">Read Product Code</string>
+</resources>
