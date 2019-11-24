@@ -68,4 +68,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    /** ImageButton click event **/
+    public void onReadProductClick(View view) {
+        if(isPermissionGranted()) startCameraPreviewActivity();
+    }
 }

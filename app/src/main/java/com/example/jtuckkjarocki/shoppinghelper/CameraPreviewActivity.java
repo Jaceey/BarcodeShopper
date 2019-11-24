@@ -45,6 +45,9 @@ public class CameraPreviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getSupportActionBar().hide();
+
         // Full Screen
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -77,6 +80,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 @Override
                 public void onIsbnDetected(FirebaseVisionBarcode barcode) {
                     overlay.setOverlay(fitOverlayRect(barcode.getBoundingBox()), barcode.getRawValue());
+                    Log.i("BARCODE INFORMATION", barcode.getRawValue());
                     overlay.invalidate();
                 }
             });
