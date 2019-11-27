@@ -20,6 +20,7 @@
             android:id="@+id/btn_finish_preview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Finish Preview" />
+            android:focusableInTouchMode="false"
+            android:text="@string/finishedScanning" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

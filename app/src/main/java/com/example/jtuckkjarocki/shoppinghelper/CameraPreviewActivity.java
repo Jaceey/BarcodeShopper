@@ -1,5 +1,6 @@
 package com.example.jtuckkjarocki.shoppinghelper;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
@@ -11,7 +12,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,19 +41,23 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private OverlayView overlay;
     private double overlayScale = -1;
 
+    String barcodeValue = "013000006408";
+    TextView tv;
+    Button btn;
+
+
     private interface OnBarcodeListener {
         void onIsbnDetected(FirebaseVisionBarcode barcode);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        getSupportActionBar().hide();
-
         // Full Screen
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        super.onCreate(savedInstanceState);
+
+        getSupportActionBar().hide();
 
         // Fix orientation : portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -58,13 +65,31 @@ public class CameraPreviewActivity extends AppCompatActivity {
         // Set layout
         setContentView(R.layout.activity_camera_preview);
 
+        btn = findViewById(R.id.btn_finish_preview);
+
         // Set ui button actions
-        findViewById(R.id.btn_finish_preview).setOnClickListener(new View.OnClickListener() {
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putExtra("barcode", barcodeValue);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                setResult(RESULT_OK, intent);
+
+             //   mCamera.stopPreview();
+/*                if (mCamera != null)
+                {
+                    mCamera.stopPreview();
+                    mCamera.release();
+                    mCamera = null;
+                }*/
+
                 CameraPreviewActivity.this.finish();
+
+                return;
             }
         });
+
 
         // Initialize Camera
         mCamera = getCameraInstance();
@@ -81,6 +106,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 public void onIsbnDetected(FirebaseVisionBarcode barcode) {
                     overlay.setOverlay(fitOverlayRect(barcode.getBoundingBox()), barcode.getRawValue());
                     Log.i("BARCODE INFORMATION", barcode.getRawValue());
+                    barcodeValue = barcode.getRawValue();
                     overlay.invalidate();
                 }
             });
@@ -99,7 +125,10 @@ public class CameraPreviewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         try{
-            if(mCamera != null) mCamera.release();
+            if(mCamera != null) {
+                mCamera.stopPreview();
+                mCamera.release();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -129,6 +158,18 @@ public class CameraPreviewActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return c;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mCamera.startPreview();
+    }
+
+    @Override
+    public void onBackPressed() {
+        //On back pressed just stop camera
+        mCamera.stopPreview();
     }
 
     /** Calculate overlay scale factor */

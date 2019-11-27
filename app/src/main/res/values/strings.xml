@@ -6,4 +6,5 @@
 
     <string name="result_product_not_detected">Product Not Detected</string>
     <string name="read_product_code">Read Product Code</string>
+    <string name="finishedScanning">Finished Scanning Barcode</string>
 </resources>
