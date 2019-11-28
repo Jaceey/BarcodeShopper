@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.google.firebase:firebase-core:16.0.0'
     implementation 'com.google.firebase:firebase-ml-vision:16.0.0'
@@ -27,6 +28,33 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+
+    //Trying to Implement AndroidX since Android.support is outdated
+
+    // For loading and tinting drawables on older versions of the platform
+    //implementation "androidx.appcompat:appcompat-resources:1.1.0"
+    //implementation "androidx.appcompat.app.AppCompatActivity:1.0.0"
+    // implementation "androidx.appcompat:appcompat:1.1.0"
+    //implementation 'androidx.legacy:legacy-support-v7:1.0.0'
+    // implementation "androidx.cardview:cardview:1.0.0"
+    // implementation "androidx.activity:activity:1.0.0"
+
+    //Material UI
+    //api 'com.google.android.material:material:1.1.0-alpha06'
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+// Had an android manifest issue and found a solution on stackoverflow to fix it
+// Source: https://stackoverflow.com/questions/43280871/android-getting-manifest-merger-failed-error-after-updating-to-a-new-version
+//configurations.all {
+//    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+//        def requested = details.requested
+//        if (requested.group == 'com.android.support') {
+//            if (!requested.name.startsWith("multidex")) {
+//                details.useVersion '28.0.0'
+//            }
+//        }
+//    }
+//}

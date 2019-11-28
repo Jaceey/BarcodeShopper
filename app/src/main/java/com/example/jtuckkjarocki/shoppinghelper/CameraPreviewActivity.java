@@ -1,9 +1,10 @@
 package com.example.jtuckkjarocki.shoppinghelper;
 
 import android.content.pm.ActivityInfo;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraDevice;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -47,17 +49,16 @@ public class CameraPreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         getSupportActionBar().hide();
-
-        // Full Screen
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         // Fix orientation : portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         // Set layout
         setContentView(R.layout.activity_camera_preview);
 
+        // Full Screen
+        // Causes App Crash when Camera Button is clicked
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         // Set ui button actions
         findViewById(R.id.btn_finish_preview).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,7 +209,9 @@ public class CameraPreviewActivity extends AppCompatActivity {
             // Task completed successfully
             for (FirebaseVisionBarcode barcode: barcodes) {
                 Log.d("Barcode", "value : "+barcode.getRawValue());
-
+                CharSequence text = "Barcode value detected: " + barcode.getRawValue();
+                Toast toast = Toast.makeText(getApplicationContext(),text, Toast.LENGTH_SHORT);
+                toast.show();
                 int valueType = barcode.getValueType();
                 if (valueType == FirebaseVisionBarcode.TYPE_PRODUCT) {
                     mBarcodeDetectedListener.onIsbnDetected(barcode);

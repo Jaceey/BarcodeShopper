@@ -6,4 +6,6 @@
 
     <string name="result_product_not_detected">Product Not Detected</string>
     <string name="read_product_code">Read Product Code</string>
+    <string name="enter_custom_value_header">Enter New Item</string>
+    <string name="UPCcode">UPC:</string>
 </resources>

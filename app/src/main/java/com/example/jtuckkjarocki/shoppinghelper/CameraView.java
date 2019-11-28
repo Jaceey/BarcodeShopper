@@ -2,7 +2,9 @@ package com.example.jtuckkjarocki.shoppinghelper;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
+//import android.hardware.Camera;
 import android.hardware.Camera;
+import android.hardware.camera2.CameraDevice;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
