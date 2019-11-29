@@ -1,20 +1,20 @@
 package com.example.jtuckkjarocki.shoppinghelper;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraDevice;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -38,6 +38,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private Camera mCamera;
     private CameraView camView;
     private OverlayView overlay;
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
     private double overlayScale = -1;
 
     private interface OnBarcodeListener {
@@ -82,20 +84,49 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 public void onIsbnDetected(FirebaseVisionBarcode barcode) {
                     overlay.setOverlay(fitOverlayRect(barcode.getBoundingBox()), barcode.getRawValue());
                     Log.i("BARCODE INFORMATION", barcode.getRawValue());
+                    CharSequence text = "Barcode value detected: " + barcode.getRawValue();
+                    Toast toast = Toast.makeText(getApplicationContext(),text, Toast.LENGTH_SHORT);
+                    toast.show();
+                    confirmBarcodeScan(barcode.getRawValue());
                     overlay.invalidate();
+
                 }
             });
-
             // Create camera preview
             camView = new CameraView(this, mCamera);
             camView.setPreviewCallback(camCallback);
-
             // Add view to UI
             FrameLayout preview = findViewById(R.id.frm_preview);
             preview.addView(camView);
             preview.addView(overlay);
         }
     }
+
+    public void confirmBarcodeScan(final CharSequence barcode){
+        builder = new AlertDialog.Builder(CameraPreviewActivity.this);
+        CharSequence message = getString(R.string.AlertDialogMessage) + "\n" + barcode;
+        builder.setTitle(R.string.AlertDialogTitle).setMessage(message);
+
+        // Set AlertDialog Listeners
+        builder.setPositiveButton(R.string.AddItemBtn, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User Clicks 'Add' Button
+                Intent AddItemIntent = new Intent(CameraPreviewActivity.this, ItemAddActivity.class);
+                AddItemIntent.putExtra("barcode",barcode);
+                CameraPreviewActivity.this.startActivity(AddItemIntent);
+            }
+        });
+        builder.setNegativeButton(R.string.CancelBtn, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User Clicks 'Cancel' Button.
+            }
+        });
+        dialog = builder.create();
+    }
+
+
 
     @Override
     protected void onDestroy() {
@@ -209,9 +240,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
             // Task completed successfully
             for (FirebaseVisionBarcode barcode: barcodes) {
                 Log.d("Barcode", "value : "+barcode.getRawValue());
-                CharSequence text = "Barcode value detected: " + barcode.getRawValue();
-                Toast toast = Toast.makeText(getApplicationContext(),text, Toast.LENGTH_SHORT);
-                toast.show();
                 int valueType = barcode.getValueType();
                 if (valueType == FirebaseVisionBarcode.TYPE_PRODUCT) {
                     mBarcodeDetectedListener.onIsbnDetected(barcode);
@@ -219,6 +247,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 }
             }
         }
+
+
 
         /** Barcode is not recognized */
         @Override
