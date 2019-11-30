@@ -1,17 +1,22 @@
 package com.example.jtuckkjarocki.shoppinghelper;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,7 +41,14 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private Camera mCamera;
     private CameraView camView;
     private OverlayView overlay;
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
     private double overlayScale = -1;
+
+    String barcodeValue = "";
+    TextView tv;
+    Button btn;
+
 
     private interface OnBarcodeListener {
         void onIsbnDetected(FirebaseVisionBarcode barcode);
@@ -44,13 +56,12 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        getSupportActionBar().hide();
-
         // Full Screen
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        super.onCreate(savedInstanceState);
+
+        getSupportActionBar().hide();
 
         // Fix orientation : portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -58,13 +69,23 @@ public class CameraPreviewActivity extends AppCompatActivity {
         // Set layout
         setContentView(R.layout.activity_camera_preview);
 
+        btn = findViewById(R.id.btn_finish_preview);
+
         // Set ui button actions
-        findViewById(R.id.btn_finish_preview).setOnClickListener(new View.OnClickListener() {
+        btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putExtra("barcode", barcodeValue);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                setResult(RESULT_OK, intent);
+
                 CameraPreviewActivity.this.finish();
+
+                return;
             }
         });
+
 
         // Initialize Camera
         mCamera = getCameraInstance();
@@ -81,6 +102,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 public void onIsbnDetected(FirebaseVisionBarcode barcode) {
                     overlay.setOverlay(fitOverlayRect(barcode.getBoundingBox()), barcode.getRawValue());
                     Log.i("BARCODE INFORMATION", barcode.getRawValue());
+                    barcodeValue = barcode.getRawValue();
+
                     overlay.invalidate();
                 }
             });
@@ -96,10 +119,37 @@ public class CameraPreviewActivity extends AppCompatActivity {
         }
     }
 
+    public void confirmBarcodeScan(final CharSequence barcode){
+        builder = new AlertDialog.Builder(CameraPreviewActivity.this);
+        CharSequence message = getString(R.string.AlertDialogMessage) + "\n" + barcode;
+        builder.setTitle(R.string.AlertDialogTitle).setMessage(message);
+
+        // Set AlertDialog Listeners
+        builder.setPositiveButton(R.string.AddItemBtn, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User Clicks 'Add' Button
+                Intent AddItemIntent = new Intent(CameraPreviewActivity.this, ItemAddActivity.class);
+                AddItemIntent.putExtra("barcode",barcode);
+                CameraPreviewActivity.this.startActivity(AddItemIntent);
+            }
+        });
+        builder.setNegativeButton(R.string.CancelBtn, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User Clicks 'Cancel' Button.
+            }
+        });
+        dialog = builder.create();
+    }
+
     @Override
     protected void onDestroy() {
         try{
-            if(mCamera != null) mCamera.release();
+            if(mCamera != null) {
+                mCamera.stopPreview();
+                mCamera.release();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -129,6 +179,18 @@ public class CameraPreviewActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return c;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mCamera.startPreview();
+    }
+
+    @Override
+    public void onBackPressed() {
+        //On back pressed just stop camera
+        mCamera.stopPreview();
     }
 
     /** Calculate overlay scale factor */
@@ -175,7 +237,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
             // set-up detector options for find EAN-13 format (commonly used 1-D barcode)
             // and UPC A and E (found on nearly every retail product)
-            options =new FirebaseVisionBarcodeDetectorOptions.Builder()
+            options = new FirebaseVisionBarcodeDetectorOptions.Builder()
                     .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_EAN_13,
                             FirebaseVisionBarcode.FORMAT_UPC_E,
                             FirebaseVisionBarcode.FORMAT_UPC_A)
@@ -207,11 +269,19 @@ public class CameraPreviewActivity extends AppCompatActivity {
         @Override public void onSuccess(List<FirebaseVisionBarcode> barcodes) {
             // Task completed successfully
             for (FirebaseVisionBarcode barcode: barcodes) {
-                Log.d("Barcode", "value : "+barcode.getRawValue());
-
                 int valueType = barcode.getValueType();
                 if (valueType == FirebaseVisionBarcode.TYPE_PRODUCT) {
                     mBarcodeDetectedListener.onIsbnDetected(barcode);
+
+                    // If barcode matches - send data back to MainActivity and close
+                    // CAN replace with new window and pass it the extra instead!
+
+                    Intent intent = new Intent();
+                    intent.putExtra("barcode", barcodeValue);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    setResult(RESULT_OK, intent);
+
+                    CameraPreviewActivity.this.finish();
                     return;
                 }
             }

@@ -84,7 +84,7 @@ public class CameraView  extends SurfaceView implements SurfaceHolder.Callback{
         try{
             mCamera.stopPreview();
             mCamera.setPreviewCallback(null);
-            mCamera.setPreviewDisplay(null);
+           // mCamera.setPreviewDisplay(null);
             mCamera=null;
         } catch (Exception e){
             e.printStackTrace();

@@ -22,6 +22,17 @@ public class OverlayView extends View {
         mText = text;
     }
 
+    public String getText()
+    {
+        if(mText != null) {
+            return this.mText;
+        }
+        else
+        {
+            return "";
+        }
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         if(mRect != null) {
@@ -34,6 +45,7 @@ public class OverlayView extends View {
             if(mText != null) {
                 p.setTextSize(80);
                 canvas.drawText(mText, mRect.left, mRect.bottom+90, p);
+
             }
         }
     }
