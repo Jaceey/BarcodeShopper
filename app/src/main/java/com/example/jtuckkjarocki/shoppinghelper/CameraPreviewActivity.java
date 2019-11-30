@@ -41,7 +41,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private OverlayView overlay;
     private double overlayScale = -1;
 
-    String barcodeValue = "013000006408";
+    String barcodeValue = "";
     TextView tv;
     Button btn;
 
@@ -76,14 +76,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 setResult(RESULT_OK, intent);
 
-             //   mCamera.stopPreview();
-/*                if (mCamera != null)
-                {
-                    mCamera.stopPreview();
-                    mCamera.release();
-                    mCamera = null;
-                }*/
-
                 CameraPreviewActivity.this.finish();
 
                 return;
@@ -107,6 +99,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
                     overlay.setOverlay(fitOverlayRect(barcode.getBoundingBox()), barcode.getRawValue());
                     Log.i("BARCODE INFORMATION", barcode.getRawValue());
                     barcodeValue = barcode.getRawValue();
+
                     overlay.invalidate();
                 }
             });
@@ -216,7 +209,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
             // set-up detector options for find EAN-13 format (commonly used 1-D barcode)
             // and UPC A and E (found on nearly every retail product)
-            options =new FirebaseVisionBarcodeDetectorOptions.Builder()
+            options = new FirebaseVisionBarcodeDetectorOptions.Builder()
                     .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_EAN_13,
                             FirebaseVisionBarcode.FORMAT_UPC_E,
                             FirebaseVisionBarcode.FORMAT_UPC_A)
@@ -248,11 +241,19 @@ public class CameraPreviewActivity extends AppCompatActivity {
         @Override public void onSuccess(List<FirebaseVisionBarcode> barcodes) {
             // Task completed successfully
             for (FirebaseVisionBarcode barcode: barcodes) {
-                Log.d("Barcode", "value : "+barcode.getRawValue());
-
                 int valueType = barcode.getValueType();
                 if (valueType == FirebaseVisionBarcode.TYPE_PRODUCT) {
                     mBarcodeDetectedListener.onIsbnDetected(barcode);
+
+                    // If barcode matches - send data back to MainActivity and close
+                    // CAN replace with new window and pass it the extra instead!
+
+                    Intent intent = new Intent();
+                    intent.putExtra("barcode", barcodeValue);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    setResult(RESULT_OK, intent);
+
+                    CameraPreviewActivity.this.finish();
                     return;
                 }
             }

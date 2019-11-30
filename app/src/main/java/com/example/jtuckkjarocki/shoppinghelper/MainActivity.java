@@ -12,11 +12,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.textclassifier.TextLinks;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -118,85 +129,35 @@ public class MainActivity extends AppCompatActivity {
 
     protected void getBarcodeInfo()
     {
-        HttpURLConnection connection = null;
-        BufferedReader reader = null;
-      //  String url = "https://www.barcodable.com/ean/" + tv.getText();
-       // String url = "http://upcdatabase.org/product/0013000006408/917F055552E36AEB3F1EC2E45CA9595F";
-        try {
-           // Document doc = (Document) Jsoup.connect(url).get();
 
-           // URL url = new URL("http://upcdatabase.org/api/json/0013000006408/917F055552E36AEB3F1EC2E45CA9595F");
-           // URL url = new URL("https://upcdatabase.org/");
+        if (tv.getText() != null && tv.getText().length() > 0) {
+            RequestQueue queue = Volley.newRequestQueue(this);
+            String url = "https://api.upcdatabase.org/product/" + tv.getText().toString() + "?apikey=290359EB4A6757A0767C6E66C4DC65CE";
 
-           // URL url = new URL("https://upcdatabase.org/product/013000006408?apikey=917F055552E36AEB3F1EC2E45CA9595F");
 
-            URL url = new URL("https://api.upcdatabase.org/product/013000006408??apikey=917F055552E36AEB3F1EC2E45CA9595F");
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    JSONObject responseJSON = null;
+                    try {
+                        JSONObject json = (JSONObject) new JSONTokener(response).nextValue();
+                        // Get title of product
+                        String title = (String) json.get("title");
+                        tv.setText("Response is: " + title);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-          //  String PRODUCT = "product/0013000006408?apikey=917F055552E36AEB3F1EC2E45CA9595F";
-           // String params = "917F055552E36AEB3F1EC2E45CA9595F";
-
-           // String urlstring = "https//api.upcdatabase.org/product/0013000006408?apikey=" + java.net.URLEncoder.encode(params, "UTF-8");
-
-           // java.net.URL url = new java.net.URL(urlstring);
-
-            connection = (HttpURLConnection) url.openConnection();
-
-/*            connection.setRequestMethod("GET");
-
-          //  connection.setRequestProperty("Product", PRODUCT);
-
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode == 200) {
-
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-                String responseLine;
-                StringBuffer response = new StringBuffer();
-
-                while ((responseLine = reader.readLine()) != null){
-                    response.append(responseLine +"\n");
                 }
-
-                reader.close();
-
-                String temp = response.toString();
-            }*/
-            connection.connect();
-
-            InputStream stream = connection.getInputStream();
-
-            reader = new BufferedReader(new InputStreamReader(stream));
-
-            StringBuffer buffer = new StringBuffer();
-            String line = "";
-
-            while((line = reader.readLine()) != null) {
-                buffer.append(line+"\n");
-                Log.d("Response: ", ">" + line);
-            }
-
-            //return buffer.toString();
-
-            String temp = buffer.toString();
-
-          //  Elements elements = (Elements) doc.getElementsByTagName("class");
-
-/*            for (Element para : elements)
-            {
-                if (para.className() == "detailtitle")
-                {
-                    tv2.setText(para.text());
-                    Log.i("DOCUMENT ELEMENT: ", para.text());
-                    return;
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    tv.setText("That didn't work!");
                 }
-            }*/
+            });
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            queue.add(stringRequest);
         }
-
-
     }
 
 
