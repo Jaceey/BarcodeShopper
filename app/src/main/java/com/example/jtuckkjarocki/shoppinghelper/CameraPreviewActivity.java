@@ -1,5 +1,6 @@
 package com.example.jtuckkjarocki.shoppinghelper;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.ImageFormat;
@@ -7,6 +8,7 @@ import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +41,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private Camera mCamera;
     private CameraView camView;
     private OverlayView overlay;
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
     private double overlayScale = -1;
 
     String barcodeValue = "";
@@ -113,6 +117,30 @@ public class CameraPreviewActivity extends AppCompatActivity {
             preview.addView(camView);
             preview.addView(overlay);
         }
+    }
+
+    public void confirmBarcodeScan(final CharSequence barcode){
+        builder = new AlertDialog.Builder(CameraPreviewActivity.this);
+        CharSequence message = getString(R.string.AlertDialogMessage) + "\n" + barcode;
+        builder.setTitle(R.string.AlertDialogTitle).setMessage(message);
+
+        // Set AlertDialog Listeners
+        builder.setPositiveButton(R.string.AddItemBtn, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User Clicks 'Add' Button
+                Intent AddItemIntent = new Intent(CameraPreviewActivity.this, ItemAddActivity.class);
+                AddItemIntent.putExtra("barcode",barcode);
+                CameraPreviewActivity.this.startActivity(AddItemIntent);
+            }
+        });
+        builder.setNegativeButton(R.string.CancelBtn, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User Clicks 'Cancel' Button.
+            }
+        });
+        dialog = builder.create();
     }
 
     @Override

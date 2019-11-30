@@ -21,6 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusableInTouchMode="false"
-            android:text="@string/finishedScanning" />
+            android:text="@string/FinishPreview" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

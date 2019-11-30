@@ -6,5 +6,12 @@
 
     <string name="result_product_not_detected">Product Not Detected</string>
     <string name="read_product_code">Read Product Code</string>
-    <string name="finishedScanning">Finished Scanning Barcode</string>
+    <string name="enter_custom_value_header">Product Name:</string>
+    <string name="UPCcode">UPC:</string>
+    <string name="Custom_Item_Header">New Item UPC Entry</string>
+    <string name="AddItemBtn">Add Item</string>
+    <string name="AlertDialogTitle">Add New Item</string>
+    <string name="AlertDialogMessage">Add New UPC Barcode Item?</string>
+    <string name="CancelBtn">Cancel</string>
+    <string name="FinishPreview">Finish Preview</string>
 </resources>
