@@ -54,6 +54,9 @@
         android:id="@+id/productRecycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:background="#FFFFFF"
+        android:padding="5dp"
         app:layout_constraintBottom_toTopOf="@id/totallayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,7 +79,8 @@
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:text="@string/carttotal"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txt_totalvalue"

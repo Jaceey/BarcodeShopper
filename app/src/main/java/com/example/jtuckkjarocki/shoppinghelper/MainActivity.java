@@ -186,8 +186,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    protected void DisplayAlertBox(final String barcode, final String text)
+    protected void DisplayAlertBox(final String barcode, String text)
     {
+        // Apostrophe was showing up as '&#39;' , so we just replaced to nothing
+        text = text.replace("&#39;", "");
 
         alert = new AlertDialog.Builder(MainActivity.this);
 
@@ -272,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
             runningTotal += productPrices.get(i);
         }
 
-        totalText.setText("$" + Double.toString(runningTotal));
+        totalText.setText("$" + String.format("%.2f", runningTotal));
 
     }
 
