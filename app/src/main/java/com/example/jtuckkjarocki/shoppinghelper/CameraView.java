@@ -6,6 +6,8 @@ import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import androidx.camera.core.CameraX;
+
 import java.util.List;
 
 /** Camera preview screen for portrait mode */
@@ -17,6 +19,8 @@ public class CameraView  extends SurfaceView implements SurfaceHolder.Callback{
 
     // Preview display parameters (by portrait mode)
     private Camera.Size mPreviewSize = null;
+    private CameraX cameraX;
+
 
     // Instances
     private Camera mCamera;

@@ -2,25 +2,34 @@ package com.example.jtuckkjarocki.shoppinghelper;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.textclassifier.TextLinks;
+import android.widget.EditText;
+import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
@@ -28,20 +37,8 @@ import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.w3c.dom.Document;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,25 +46,44 @@ public class MainActivity extends AppCompatActivity {
     private String[] REQUEST_PERMISSIONS = new String[]{Manifest.permission.CAMERA};
     // Permission Request Code
     private int RESULT_PERMISSIONS = 0x9000;
-    TextView tv;
-    TextView tv2;
 
-    private String PRODUCT_XPATH = "/html/body/div[2]/div/section[1]/div/div/div[1]/h2";
+    ArrayList<String> allProducts = new ArrayList<>();
+    ArrayList<Double> productPrices = new ArrayList<>();
+
+    TextView tv;
+    TextView totalText;
+    RecyclerView rv;
+    RecyclerView.Adapter rvAdapter;
+    RecyclerView.LayoutManager rvLayoutManager;
+
+
+    private AlertDialog.Builder alert;
+    private EditText etPrice;
+    private TextView tvBarcode;
+    private EditText etName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tv = findViewById(R.id.txt_product);
-        tv2 = findViewById(R.id.txt_barcodename);
+       // tv = findViewById(R.id.txt_product);
+        tv = findViewById(R.id.txt_barcodename);
+        totalText = findViewById(R.id.txt_totalvalue);
 
-        findViewById(R.id.btn_show_preview_activity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isPermissionGranted()) startCameraPreviewActivity();
-            }
-        });
+        // set up recycler view with Product ArrayList<String>
+        rv = findViewById(R.id.productRecycler);
+        rvLayoutManager = new LinearLayoutManager(getApplicationContext());
+        rv.setLayoutManager(rvLayoutManager);
+        rvAdapter = new ProductAdapter(getApplicationContext(), allProducts);
+        rv.setAdapter(rvAdapter);
+
+//        findViewById(R.id.btn_show_preview_activity).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(isPermissionGranted()) startCameraPreviewActivity();
+//            }
+//        });
     }
 
     /** Go to camera preview */
@@ -129,12 +145,16 @@ public class MainActivity extends AppCompatActivity {
 
     protected void getBarcodeInfo()
     {
+        String barcode = "";
+        final String[] title = {""};
 
         if (tv.getText() != null && tv.getText().length() > 0) {
+            barcode = tv.getText().toString();
             RequestQueue queue = Volley.newRequestQueue(this);
-            String url = "https://api.upcdatabase.org/product/" + tv.getText().toString() + "?apikey=290359EB4A6757A0767C6E66C4DC65CE";
+            String url = "https://api.upcdatabase.org/product/" + barcode + "?apikey=290359EB4A6757A0767C6E66C4DC65CE";
 
 
+            String finalBarcode = barcode;
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -142,8 +162,10 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         JSONObject json = (JSONObject) new JSONTokener(response).nextValue();
                         // Get title of product
-                        String title = (String) json.get("title");
-                        tv.setText("Response is: " + title);
+                        title[0] = (String) json.get("title");
+                       // tv.setText("Response is: " + title[0]);
+
+                        DisplayAlertBox(finalBarcode, title[0]);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -157,8 +179,101 @@ public class MainActivity extends AppCompatActivity {
             });
 
             queue.add(stringRequest);
+
+
+
+          //  DisplayAlertBox(barcode, title[0]);
         }
     }
 
+    protected void DisplayAlertBox(final String barcode, final String text)
+    {
+
+        alert = new AlertDialog.Builder(MainActivity.this);
+
+        // set up base layout
+        LinearLayout layout = new LinearLayout(this);
+        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setLayoutParams(parms);
+
+        layout.setGravity(Gravity.CLIP_VERTICAL);
+        layout.setPadding(2,2,2,2);
+
+        // Add barcode
+        TextView b = new TextView(MainActivity.this);
+        b.setText("Barcode: ");
+
+        tvBarcode = new TextView(MainActivity.this);
+        tvBarcode.setText(barcode);
+
+        layout.addView(b, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(tvBarcode, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // Add product name
+        TextView n = new TextView(MainActivity.this);
+        n.setText("Name: ");
+
+        etName = new EditText(MainActivity.this);
+        etName.setText(text);
+
+        layout.addView(n, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(etName, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // Add product price
+        TextView p = new TextView(MainActivity.this);
+        p.setText("Price: ");
+
+        etPrice = new EditText(MainActivity.this);
+        etPrice.setRawInputType(Configuration.KEYBOARD_12KEY);
+
+        layout.addView(p, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(etPrice, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // Add to alert box
+        alert.setView(layout);
+        alert.setTitle("Product Information");
+        alert.setMessage("Set the missing information");
+
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Do something with value...
+                String product = etName.getText().toString() + ", $" + etPrice.getText().toString();
+
+                if(product != "") {
+                    if (!allProducts.contains(product)) {
+                        allProducts.add(product);
+                        productPrices.add(Double.parseDouble(etPrice.getText().toString()));
+                        calculateTotal();
+                    }
+                }
+
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Cancelled
+                Toast.makeText(getApplicationContext(),"Adding Product Cancelled!",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        alert.show();
+    }
+
+    void calculateTotal(){
+        double runningTotal = 0;
+
+        for (int i = 0; i < productPrices.size(); i++)
+        {
+            runningTotal += productPrices.get(i);
+        }
+
+        totalText.setText("$" + Double.toString(runningTotal));
+
+    }
 
 }
