@@ -1,7 +1,8 @@
 package com.example.jtuckkjarocki.shoppinghelper;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
 

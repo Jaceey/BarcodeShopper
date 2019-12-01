@@ -5,10 +5,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,11 +12,15 @@ import android.view.textclassifier.TextLinks;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
@@ -28,20 +28,6 @@ import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.w3c.dom.Document;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,24 +36,21 @@ public class MainActivity extends AppCompatActivity {
     // Permission Request Code
     private int RESULT_PERMISSIONS = 0x9000;
     TextView tv;
-    TextView tv2;
-
-    private String PRODUCT_XPATH = "/html/body/div[2]/div/section[1]/div/div/div[1]/h2";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tv = findViewById(R.id.txt_product);
-        tv2 = findViewById(R.id.txt_barcodename);
+       // tv = findViewById(R.id.txt_product);
+        tv = findViewById(R.id.txt_barcodename);
 
-        findViewById(R.id.btn_show_preview_activity).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isPermissionGranted()) startCameraPreviewActivity();
-            }
-        });
+//        findViewById(R.id.btn_show_preview_activity).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(isPermissionGranted()) startCameraPreviewActivity();
+//            }
+//        });
     }
 
     /** Go to camera preview */

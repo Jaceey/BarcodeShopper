@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AndroidCameraPreview</string>
+    <string name="app_name">Barcode Shopper</string>
 
     <string name="err_permission_not_granted">Camera permission is needed.</string>
     <string name="title_activity_camera_preview">CameraPreviewActivity</string>
