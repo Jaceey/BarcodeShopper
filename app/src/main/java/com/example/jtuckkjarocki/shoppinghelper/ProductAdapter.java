@@ -12,18 +12,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
 
+import java.util.ArrayList;
+
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    String[] SubjectValues;
+    //String[] SubjectValues;
+
+    ArrayList<String> SubjectValues;
+
     Context context;
     View view1;
     ViewHolder viewHolder1;
     TextView textView;
 
-    public ProductAdapter(Context context1, String[] SubjectValues1) {
+    public ProductAdapter(Context context1, ArrayList<String> SubjectValues1) {
 
         SubjectValues = SubjectValues1;
         context = context1;
@@ -53,13 +58,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        holder.textView.setText(SubjectValues[position]);
+        holder.textView.setText(SubjectValues.get(position));
     }
 
     @Override
     public int getItemCount() {
 
-        return SubjectValues.length;
+        return SubjectValues.size();
     }
 
 }

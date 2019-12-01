@@ -2,13 +2,19 @@ package com.example.jtuckkjarocki.shoppinghelper;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.textclassifier.TextLinks;
+import android.widget.EditText;
+import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -29,13 +37,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     // Permission List
     private String[] REQUEST_PERMISSIONS = new String[]{Manifest.permission.CAMERA};
     // Permission Request Code
     private int RESULT_PERMISSIONS = 0x9000;
+
+    ArrayList<String> allProducts = new ArrayList<>();
+
     TextView tv;
+    RecyclerView rv;
+    RecyclerView.Adapter rvAdapter;
+    RecyclerView.LayoutManager rvLayoutManager;
+
+
+    private AlertDialog.Builder alert;
+    private EditText etPrice;
+    private TextView tvBarcode;
+    private EditText etName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +66,13 @@ public class MainActivity extends AppCompatActivity {
 
        // tv = findViewById(R.id.txt_product);
         tv = findViewById(R.id.txt_barcodename);
+
+        // set up recycler view with Product ArrayList<String>
+        rv = findViewById(R.id.productRecycler);
+        rvLayoutManager = new LinearLayoutManager(getApplicationContext());
+        rv.setLayoutManager(rvLayoutManager);
+        rvAdapter = new ProductAdapter(getApplicationContext(), allProducts);
+        rv.setAdapter(rvAdapter);
 
 //        findViewById(R.id.btn_show_preview_activity).setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -112,10 +141,13 @@ public class MainActivity extends AppCompatActivity {
 
     protected void getBarcodeInfo()
     {
+        String barcode = "";
+        final String[] title = {""};
 
         if (tv.getText() != null && tv.getText().length() > 0) {
+            barcode = tv.getText().toString();
             RequestQueue queue = Volley.newRequestQueue(this);
-            String url = "https://api.upcdatabase.org/product/" + tv.getText().toString() + "?apikey=290359EB4A6757A0767C6E66C4DC65CE";
+            String url = "https://api.upcdatabase.org/product/" + barcode + "?apikey=290359EB4A6757A0767C6E66C4DC65CE";
 
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -125,8 +157,8 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         JSONObject json = (JSONObject) new JSONTokener(response).nextValue();
                         // Get title of product
-                        String title = (String) json.get("title");
-                        tv.setText("Response is: " + title);
+                        title[0] = (String) json.get("title");
+                        tv.setText("Response is: " + title[0]);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -140,8 +172,84 @@ public class MainActivity extends AppCompatActivity {
             });
 
             queue.add(stringRequest);
+
+
+
+            DisplayAlertBox(barcode, title[0]);
         }
     }
 
+    protected void DisplayAlertBox(final String barcode, final String text)
+    {
+
+        alert = new AlertDialog.Builder(MainActivity.this);
+
+        // set up base layout
+        LinearLayout layout = new LinearLayout(this);
+        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setLayoutParams(parms);
+
+        layout.setGravity(Gravity.CLIP_VERTICAL);
+        layout.setPadding(2,2,2,2);
+
+        // Add barcode
+        TextView b = new TextView(MainActivity.this);
+        b.setText("Barcode: ");
+
+        tvBarcode = new TextView(MainActivity.this);
+        tvBarcode.setText(barcode);
+
+        layout.addView(b, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(tvBarcode, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // Add product name
+        TextView n = new TextView(MainActivity.this);
+        n.setText("Name: ");
+
+        etName = new EditText(MainActivity.this);
+        etName.setText(text);
+
+        layout.addView(n, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(etName, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // Add product price
+        TextView p = new TextView(MainActivity.this);
+        p.setText("Price: ");
+
+        etPrice = new EditText(MainActivity.this);
+
+        layout.addView(p, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(etPrice, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        // Add to alert box
+        alert.setView(layout);
+        alert.setTitle("Product Information");
+        alert.setMessage("Set the missing information");
+
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Do something with value...
+                String product = barcode + ": " + etName.getText().toString() + ", $" + etPrice.getText().toString();
+
+                if(product != "")
+                if (!allProducts.contains(product))
+                    allProducts.add(product);
+
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // Cancelled
+                Toast.makeText(getApplicationContext(),"Adding Product Cancelled!",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        alert.show();
+    }
 
 }
