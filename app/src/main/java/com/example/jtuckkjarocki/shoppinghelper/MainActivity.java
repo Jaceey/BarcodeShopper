@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,8 +48,10 @@ public class MainActivity extends AppCompatActivity {
     private int RESULT_PERMISSIONS = 0x9000;
 
     ArrayList<String> allProducts = new ArrayList<>();
+    ArrayList<Double> productPrices = new ArrayList<>();
 
     TextView tv;
+    TextView totalText;
     RecyclerView rv;
     RecyclerView.Adapter rvAdapter;
     RecyclerView.LayoutManager rvLayoutManager;
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
        // tv = findViewById(R.id.txt_product);
         tv = findViewById(R.id.txt_barcodename);
+        totalText = findViewById(R.id.txt_totalvalue);
 
         // set up recycler view with Product ArrayList<String>
         rv = findViewById(R.id.productRecycler);
@@ -150,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             String url = "https://api.upcdatabase.org/product/" + barcode + "?apikey=290359EB4A6757A0767C6E66C4DC65CE";
 
 
+            String finalBarcode = barcode;
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -158,7 +163,9 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject json = (JSONObject) new JSONTokener(response).nextValue();
                         // Get title of product
                         title[0] = (String) json.get("title");
-                        tv.setText("Response is: " + title[0]);
+                       // tv.setText("Response is: " + title[0]);
+
+                        DisplayAlertBox(finalBarcode, title[0]);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -175,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            DisplayAlertBox(barcode, title[0]);
+          //  DisplayAlertBox(barcode, title[0]);
         }
     }
 
@@ -218,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
         p.setText("Price: ");
 
         etPrice = new EditText(MainActivity.this);
+        etPrice.setRawInputType(Configuration.KEYBOARD_12KEY);
 
         layout.addView(p, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         layout.addView(etPrice, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -232,11 +240,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 // Do something with value...
-                String product = barcode + ": " + etName.getText().toString() + ", $" + etPrice.getText().toString();
+                String product = etName.getText().toString() + ", $" + etPrice.getText().toString();
 
-                if(product != "")
-                if (!allProducts.contains(product))
-                    allProducts.add(product);
+                if(product != "") {
+                    if (!allProducts.contains(product)) {
+                        allProducts.add(product);
+                        productPrices.add(Double.parseDouble(etPrice.getText().toString()));
+                        calculateTotal();
+                    }
+                }
 
             }
         });
@@ -250,6 +262,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         alert.show();
+    }
+
+    void calculateTotal(){
+        double runningTotal = 0;
+
+        for (int i = 0; i < productPrices.size(); i++)
+        {
+            runningTotal += productPrices.get(i);
+        }
+
+        totalText.setText("$" + Double.toString(runningTotal));
+
     }
 
 }

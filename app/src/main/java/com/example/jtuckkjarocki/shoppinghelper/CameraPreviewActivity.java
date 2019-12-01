@@ -3,21 +3,26 @@ package com.example.jtuckkjarocki.shoppinghelper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,6 +54,11 @@ public class CameraPreviewActivity extends AppCompatActivity {
     String barcodeValue = "";
     TextView tv;
     Button btn;
+    TextureView textureView;
+
+    private int REQUEST_CODE_PERMISSIONS = 101;
+    private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
+
 
 
     private interface OnBarcodeListener {
@@ -70,8 +80,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
         // Set layout
         setContentView(R.layout.activity_camera_preview);
 
-        btn = findViewById(R.id.btn_finish_preview);
 
+        btn = findViewById(R.id.btn_finish_preview);
         // Set ui button actions
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +99,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
 
         // Initialize Camera
+
         mCamera = getCameraInstance();
 
         // Set-up preview screen
@@ -143,6 +154,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
         });
         dialog = builder.create();
     }
+
 
     @Override
     protected void onDestroy() {
