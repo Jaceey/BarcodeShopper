@@ -1,4 +1,4 @@
-package com.example.jtuckkjarocki.shoppinghelper;
+package com.example.jtuckkjarocki.shoppinghelper.Views;
 
 import android.content.Context;
 import android.graphics.Canvas;

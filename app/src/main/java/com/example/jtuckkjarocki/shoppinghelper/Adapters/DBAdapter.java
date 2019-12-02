@@ -1,4 +1,4 @@
-package com.example.jtuckkjarocki.shoppinghelper;
+package com.example.jtuckkjarocki.shoppinghelper.Adapters;
 
 
 import android.content.ContentValues;

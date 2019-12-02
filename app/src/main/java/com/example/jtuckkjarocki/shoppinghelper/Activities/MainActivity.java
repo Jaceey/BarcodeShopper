@@ -1,4 +1,4 @@
-package com.example.jtuckkjarocki.shoppinghelper;
+package com.example.jtuckkjarocki.shoppinghelper.Activities;
 
 
 import android.Manifest;
@@ -12,9 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.textclassifier.TextLinks;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +30,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.jtuckkjarocki.shoppinghelper.Adapters.ProductAdapter;
 import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
 
 import org.json.JSONException;
@@ -40,8 +39,10 @@ import org.json.JSONTokener;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ProductAdapter.OnProductListener {
 
+    //Logcat for debugging
+    private static final String TAG = "MainActivity";
     // Permission List
     private String[] REQUEST_PERMISSIONS = new String[]{Manifest.permission.CAMERA};
     // Permission Request Code
@@ -75,16 +76,11 @@ public class MainActivity extends AppCompatActivity {
         rv = findViewById(R.id.productRecycler);
         rvLayoutManager = new LinearLayoutManager(getApplicationContext());
         rv.setLayoutManager(rvLayoutManager);
-        rvAdapter = new ProductAdapter(getApplicationContext(), allProducts);
+        rvAdapter = new ProductAdapter(getApplicationContext(), allProducts, this);
         rv.setAdapter(rvAdapter);
-
-//        findViewById(R.id.btn_show_preview_activity).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(isPermissionGranted()) startCameraPreviewActivity();
-//            }
-//        });
     }
+
+
 
     /** Go to camera preview */
     private void startCameraPreviewActivity(){
@@ -177,11 +173,7 @@ public class MainActivity extends AppCompatActivity {
                     tv.setText("That didn't work!");
                 }
             });
-
             queue.add(stringRequest);
-
-
-
           //  DisplayAlertBox(barcode, title[0]);
         }
     }
@@ -278,4 +270,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onProductClick(int position) {
+        Log.d(TAG, "onProductClick: " + allProducts.get(position));
+        Intent editItemIntent = new Intent(this, ItemAddActivity.class);
+        Bundle editBundle = new Bundle();
+        editBundle.putDouble("price", productPrices.get(position));
+        editBundle.putString("name", allProducts.get(position));
+        editItemIntent.putExtras(editBundle);
+        startActivity(editItemIntent);
+    }
 }

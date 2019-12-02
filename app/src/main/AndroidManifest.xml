@@ -16,20 +16,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.jtuckkjarocki.shoppinghelper.ItemAddActivity"></activity>
+        <activity android:name="com.example.jtuckkjarocki.shoppinghelper.Activities.ItemAddActivity"></activity>
 
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name="com.example.jtuckkjarocki.shoppinghelper.MainActivity">
+        <activity android:name="com.example.jtuckkjarocki.shoppinghelper.Activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.jtuckkjarocki.shoppinghelper.CameraPreviewActivity"></activity>
+        <activity android:name="com.example.jtuckkjarocki.shoppinghelper.Activities.CameraPreviewActivity"></activity>
 
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"

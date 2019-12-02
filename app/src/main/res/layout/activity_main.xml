@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#9966666D"
-    tools:context="com.example.jtuckkjarocki.shoppinghelper.MainActivity">
+    tools:context="com.example.jtuckkjarocki.shoppinghelper.Activities.MainActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"

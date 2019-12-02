@@ -1,9 +1,8 @@
-package com.example.jtuckkjarocki.shoppinghelper;
+package com.example.jtuckkjarocki.shoppinghelper.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -16,14 +15,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
+import com.example.jtuckkjarocki.shoppinghelper.Views.CameraView;
+import com.example.jtuckkjarocki.shoppinghelper.Views.OverlayView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;

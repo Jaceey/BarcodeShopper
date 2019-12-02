@@ -10,30 +10,29 @@
         android:id="@+id/Enter_custom_item_header_TextView"
         android:layout_width="84dp"
         android:layout_height="19dp"
-        android:layout_marginTop="112dp"
+        android:layout_marginBottom="28dp"
         android:textAlignment="center"
         android:textSize="12sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.087"
+        app:layout_constraintHorizontal_bias="0.085"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/enter_custom_value_header"
-        app:layout_constraintVertical_bias="1.0"/>
+        tools:text="@string/enter_custom_value_header" />
 
     <TextView
         android:id="@+id/upc_tview"
-        android:layout_width="28dp"
-        android:layout_height="19dp"
+        android:layout_width="34dp"
+        android:layout_height="21dp"
         android:layout_marginBottom="16dp"
         android:text="@string/UPCcode"
+        android:textAlignment="center"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/Enter_custom_item_header_TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.219"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/textView4"
@@ -41,45 +40,73 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:text="@string/Custom_Item_Header"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/UPC_Item_Name_TextView"
-        android:layout_width="255dp"
-        android:layout_height="19dp"
+    <EditText
+        android:id="@+id/Item_Name_et"
+        android:layout_width="274dp"
+        android:layout_height="33dp"
         android:layout_marginTop="16dp"
+        android:hint="@string/item_name_hint"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextPrice"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.511"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/Enter_custom_item_header_TextView"
-        app:layout_constraintTop_toBottomOf="@+id/UPC_entry_TextView"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintTop_toBottomOf="@+id/UPC_entry_tv"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/UPC_entry_TextView"
+        android:id="@+id/UPC_entry_tv"
         android:layout_width="255dp"
         android:layout_height="19dp"
         android:layout_marginTop="30dp"
+        android:hint="@string/upc_entry_hint"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/upc_tview"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <Button
         android:id="@+id/add_item_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/AddItemBtn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="1.0"/>
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="40dp"
+        android:layout_height="19dp"
+        android:layout_marginBottom="552dp"
+        android:text="@string/item_price"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.194"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextPrice"
+        android:layout_width="146dp"
+        android:layout_height="35dp"
+        android:layout_marginBottom="544dp"
+        android:ems="10"
+        android:hint="@string/price_hint"
+        android:inputType="numberDecimal"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.13"
+        app:layout_constraintStart_toEndOf="@+id/textView2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
