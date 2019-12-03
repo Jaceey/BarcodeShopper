@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,10 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +33,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.jtuckkjarocki.shoppinghelper.Adapters.DBAdapter;
 import com.example.jtuckkjarocki.shoppinghelper.Adapters.ProductAdapter;
 import com.example.jtuckkjarocki.shoppinghelper.barcode.R;
 
@@ -48,8 +52,12 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     // Permission Request Code
     private int RESULT_PERMISSIONS = 0x9000;
 
+    // For recycler
     ArrayList<String> allProducts = new ArrayList<>();
+    // For item edit
+    ArrayList<String> allBarcodes = new ArrayList<>();
     ArrayList<Double> productPrices = new ArrayList<>();
+    ArrayList<String> productNames = new ArrayList<>();
 
     TextView tv;
     TextView totalText;
@@ -68,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
        // tv = findViewById(R.id.txt_product);
         tv = findViewById(R.id.txt_barcodename);
         totalText = findViewById(R.id.txt_totalvalue);
@@ -77,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         rvLayoutManager = new LinearLayoutManager(getApplicationContext());
         rv.setLayoutManager(rvLayoutManager);
         rvAdapter = new ProductAdapter(getApplicationContext(), allProducts, this);
+
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
         rv.setAdapter(rvAdapter);
     }
 
@@ -84,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
     /** Go to camera preview */
     private void startCameraPreviewActivity(){
-        startActivity(new Intent(this, CameraPreviewActivity.class));
+      //  startActivity(new Intent(this, CameraPreviewActivity.class));
         startActivityForResult(new Intent(this, CameraPreviewActivity.class), 1);
     }
 
@@ -133,6 +144,40 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             if (resultCode == RESULT_OK) {
                 tv.setText(data.getStringExtra("barcode"));
                 getBarcodeInfo();
+            }
+        }
+        else if (requestCode == 2)
+        {
+            if (resultCode == RESULT_OK) {
+                Integer pos = data.getIntExtra("position", 0);
+                String button = data.getStringExtra("button");
+                Log.i("BUTTON TYPE", button);
+                if (button.compareTo("SAVE") == 0)
+                {
+                    Log.i("SAVE BUTTON", "MADE IT INTO SAVE!");
+                    // reset all values at position
+                    allProducts.set(pos, data.getStringExtra("name") + ", $" + data.getStringExtra("price"));
+                    allBarcodes.set(pos, data.getStringExtra("barcode"));
+                    productPrices.set(pos, Double.parseDouble(data.getStringExtra("price")));
+                    productNames.set(pos, data.getStringExtra("name"));
+                    calculateTotal();
+                    rvAdapter.notifyDataSetChanged();
+                }
+                else if (button.compareTo("DELETE") == 0)
+                {
+                    Log.i("DELETE BUTTON", "MADE IT INTO DELETE! pos:" + pos);
+                    allProducts.remove(pos);
+                    allBarcodes.remove(pos);
+                    productPrices.remove(pos);
+                    productNames.remove(pos);
+                    calculateTotal();
+                  //  rvAdapter.notifyDataSetChanged();
+                    rv.removeViewAt(pos);
+                    rvAdapter.notifyItemRemoved(pos);
+                    rvAdapter.notifyItemRangeRemoved(pos, allProducts.size());
+
+
+                }
             }
         }
 
@@ -239,7 +284,9 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                 if(product != "") {
                     if (!allProducts.contains(product)) {
                         allProducts.add(product);
+                        allBarcodes.add(tv.getText().toString());
                         productPrices.add(Double.parseDouble(etPrice.getText().toString()));
+                        productNames.add(etName.getText().toString());
                         calculateTotal();
                     }
                 }
@@ -272,12 +319,37 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
     @Override
     public void onProductClick(int position) {
-        Log.d(TAG, "onProductClick: " + allProducts.get(position));
+        Log.d(TAG, "onProductClick: " + productNames.get(position));
+        Log.d(TAG, "allBarcodeONClick: " + allBarcodes.get(position));
+
         Intent editItemIntent = new Intent(this, ItemAddActivity.class);
         Bundle editBundle = new Bundle();
+        editBundle.putInt("position", position);
         editBundle.putDouble("price", productPrices.get(position));
-        editBundle.putString("name", allProducts.get(position));
+        editBundle.putString("name", productNames.get(position));
+        editBundle.putString("upc", allBarcodes.get(position));
         editItemIntent.putExtras(editBundle);
-        startActivity(editItemIntent);
+        //startActivity(editItemIntent);
+
+        startActivityForResult(editItemIntent, 2);
     }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            String product = allProducts.get(viewHolder.getAdapterPosition());
+            allProducts.remove(viewHolder.getAdapterPosition());
+            productNames.remove(viewHolder.getAdapterPosition());
+            productPrices.remove(viewHolder.getAdapterPosition());
+            allBarcodes.remove(viewHolder.getAdapterPosition());
+
+            rvAdapter.notifyDataSetChanged();
+            calculateTotal();
+            Toast.makeText(getApplicationContext(),product + " was removed!",Toast.LENGTH_SHORT).show();
+        }
+    };
 }
