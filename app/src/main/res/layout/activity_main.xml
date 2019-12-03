@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="@string/carttotal"
-            android:textColor="#0811E2"
+            android:textColor="#2b7327"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -91,7 +91,7 @@
             android:padding="10dp"
             android:text="@string/totalvalue"
             android:textAlignment="textStart"
-            android:textColor="#0811E2"
+            android:textColor="#2b7327"
             android:textSize="24sp"
             android:textStyle="bold" />
 
