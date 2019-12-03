@@ -23,4 +23,5 @@
     <string name="price_hint">Enter Item Price</string>
     <string name="item_name_hint">Enter Item Name</string>
     <string name="upc_entry_hint">Enter Item UPC Code</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -24,6 +24,7 @@
             android:layout_marginTop="16dp"
             android:background="#FFFFFF"
             android:gravity="center_vertical"
+            android:onClick="onReadProductClick"
             android:padding="8dp"
             android:text="@string/read_product_code"
             android:textSize="18sp" />
@@ -77,19 +78,22 @@
             android:id="@+id/txt_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="10dp"
             android:text="@string/carttotal"
-            android:textSize="18sp"
+            android:textColor="#0811E2"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txt_totalvalue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="10dp"
             android:text="@string/totalvalue"
             android:textAlignment="textStart"
-            android:textSize="18sp" />
+            android:textColor="#0811E2"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
