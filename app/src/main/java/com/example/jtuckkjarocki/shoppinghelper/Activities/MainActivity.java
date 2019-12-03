@@ -341,8 +341,15 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         }
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            String product = allProducts.get(viewHolder.getAdapterPosition());
             allProducts.remove(viewHolder.getAdapterPosition());
+            productNames.remove(viewHolder.getAdapterPosition());
+            productPrices.remove(viewHolder.getAdapterPosition());
+            allBarcodes.remove(viewHolder.getAdapterPosition());
+
             rvAdapter.notifyDataSetChanged();
+            calculateTotal();
+            Toast.makeText(getApplicationContext(),product + " was removed!",Toast.LENGTH_SHORT).show();
         }
     };
 }
