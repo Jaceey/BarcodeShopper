@@ -81,28 +81,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="68dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="100dp"
         android:text="@string/item_price"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/add_item_btn"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Item_Name_et" />
+        app:layout_constraintEnd_toStartOf="@+id/editTextPrice"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editTextPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="96dp"
+        android:layout_marginBottom="100dp"
         android:background="@android:drawable/screen_background_light_transparent"
         android:hint="@string/price_hint"
         android:inputType="numberDecimal"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/add_item_btn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toBottomOf="@+id/Item_Name_et" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/add_item_btn"
@@ -116,6 +115,32 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/qty"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView2"
+        app:layout_constraintEnd_toStartOf="@+id/qty_item_et"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Item_Name_et" />
+
+    <EditText
+        android:id="@+id/qty_item_et"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="108dp"
+        android:background="@android:drawable/screen_background_light_transparent"
+        android:hint="@string/item_qty_hint"
+        android:inputType="textPersonName"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTextPrice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Item_Name_et" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

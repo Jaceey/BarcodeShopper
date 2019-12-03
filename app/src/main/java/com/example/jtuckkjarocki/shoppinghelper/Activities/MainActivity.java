@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
     ArrayList<String> allBarcodes = new ArrayList<>();
     ArrayList<Double> productPrices = new ArrayList<>();
     ArrayList<String> productNames = new ArrayList<>();
+    ArrayList<Integer> allQuantities = new ArrayList<>();
 
     TextView tv;
     TextView totalText;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
 
     private AlertDialog.Builder alert;
+    private EditText etQty;
     private EditText etPrice;
     private TextView tvBarcode;
     private EditText etName;
@@ -156,10 +158,17 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                 {
                     Log.i("SAVE BUTTON", "MADE IT INTO SAVE!");
                     // reset all values at position
-                    allProducts.set(pos, data.getStringExtra("name") + ", $" + data.getStringExtra("price"));
+                    if (data.getStringExtra("qty") == "1") {
+                        allProducts.set(pos, data.getStringExtra("name") + ", $" + data.getStringExtra("price"));
+                    }
+                    else
+                    {   // if more than one of something
+                        allProducts.set(pos, data.getStringExtra("name") + ", $" + data.getStringExtra("price") + " x " + data.getStringExtra("qty"));
+                    }
                     allBarcodes.set(pos, data.getStringExtra("barcode"));
                     productPrices.set(pos, Double.parseDouble(data.getStringExtra("price")));
                     productNames.set(pos, data.getStringExtra("name"));
+                    allQuantities.set(pos, Integer.parseInt(data.getStringExtra("qty")));
                     calculateTotal();
                     rvAdapter.notifyDataSetChanged();
                 }
@@ -170,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                     allBarcodes.remove(pos);
                     productPrices.remove(pos);
                     productNames.remove(pos);
+                    allQuantities.remove(pos);
                     calculateTotal();
                   //  rvAdapter.notifyDataSetChanged();
                     rv.removeViewAt(pos);
@@ -259,6 +269,16 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         layout.addView(n, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         layout.addView(etName, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
+        // Add product Qty
+        TextView q = new TextView(MainActivity.this);
+        q.setText("Qty: ");
+
+        etQty = new EditText(MainActivity.this);
+        etQty.setRawInputType(Configuration.KEYBOARD_12KEY);
+
+        layout.addView(q, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout.addView(etQty, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
         // Add product price
         TextView p = new TextView(MainActivity.this);
         p.setText("Price: ");
@@ -279,7 +299,15 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 // Do something with value...
-                String product = etName.getText().toString() + ", $" + etPrice.getText().toString();
+                String product = "";
+                Log.i("QUANTITY VALUE", etQty.getText().toString());
+                if (etQty.getText().toString() == "1") {
+                    product = etName.getText().toString() + ", $" + etPrice.getText().toString();
+                }
+                else
+                {   // if more than one of something
+                    product = etName.getText().toString() + ", $" + etPrice.getText().toString() + " x " + etQty.getText().toString();
+                }
 
                 if(product != "") {
                     if (!allProducts.contains(product)) {
@@ -287,6 +315,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                         allBarcodes.add(tv.getText().toString());
                         productPrices.add(Double.parseDouble(etPrice.getText().toString()));
                         productNames.add(etName.getText().toString());
+                        allQuantities.add(Integer.parseInt(etQty.getText().toString()));
                         calculateTotal();
                     }
                 }
@@ -310,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
         for (int i = 0; i < productPrices.size(); i++)
         {
-            runningTotal += productPrices.get(i);
+            runningTotal += (productPrices.get(i) * allQuantities.get(i));
         }
 
         totalText.setText("$" + String.format("%.2f", runningTotal));
@@ -328,6 +357,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         editBundle.putDouble("price", productPrices.get(position));
         editBundle.putString("name", productNames.get(position));
         editBundle.putString("upc", allBarcodes.get(position));
+        editBundle.putInt("qty", allQuantities.get(position));
         editItemIntent.putExtras(editBundle);
         //startActivity(editItemIntent);
 
@@ -346,6 +376,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             productNames.remove(viewHolder.getAdapterPosition());
             productPrices.remove(viewHolder.getAdapterPosition());
             allBarcodes.remove(viewHolder.getAdapterPosition());
+            allQuantities.remove(viewHolder.getAdapterPosition());
 
             rvAdapter.notifyDataSetChanged();
             calculateTotal();
