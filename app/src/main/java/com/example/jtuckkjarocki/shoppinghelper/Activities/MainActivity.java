@@ -18,10 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -84,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
         rvLayoutManager = new LinearLayoutManager(getApplicationContext());
         rv.setLayoutManager(rvLayoutManager);
         rvAdapter = new ProductAdapter(getApplicationContext(), allProducts, this);
+
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(rv);
         rv.setAdapter(rvAdapter);
     }
 
@@ -147,9 +151,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
             if (resultCode == RESULT_OK) {
                 Integer pos = data.getIntExtra("position", 0);
                 String button = data.getStringExtra("button");
-
                 Log.i("BUTTON TYPE", button);
-
                 if (button.compareTo("SAVE") == 0)
                 {
                     Log.i("SAVE BUTTON", "MADE IT INTO SAVE!");
@@ -158,9 +160,7 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                     allBarcodes.set(pos, data.getStringExtra("barcode"));
                     productPrices.set(pos, Double.parseDouble(data.getStringExtra("price")));
                     productNames.set(pos, data.getStringExtra("name"));
-
                     calculateTotal();
-
                     rvAdapter.notifyDataSetChanged();
                 }
                 else if (button.compareTo("DELETE") == 0)
@@ -170,13 +170,9 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
                     allBarcodes.remove(pos);
                     productPrices.remove(pos);
                     productNames.remove(pos);
-
                     calculateTotal();
-
                   //  rvAdapter.notifyDataSetChanged();
-
                     rv.removeViewAt(pos);
-
                     rvAdapter.notifyItemRemoved(pos);
                     rvAdapter.notifyItemRangeRemoved(pos, allProducts.size());
 
@@ -337,4 +333,16 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
         startActivityForResult(editItemIntent, 2);
     }
+
+    ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            allProducts.remove(viewHolder.getAdapterPosition());
+            rvAdapter.notifyDataSetChanged();
+        }
+    };
 }
