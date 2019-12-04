@@ -26,4 +26,12 @@
     <string name="delete">Delete</string>
     <string name="qty">Qty:</string>
     <string name="item_qty_hint">Enter Item Qty</string>
+    <string name="about_header"></string>
+    <string name="JaceeyAbout">Jaceey Tuck</string>
+    <string name="JaceeyEmail">J_tuck@fanshaweonline.ca</string>
+    <string name="KevinAbout">Kevin Jarocki</string>
+    <string name="KevinEmail">k_jarocki@fanshaweonline.ca</string>
+    <string name="AboutIntro">Barcode Shopper Developed and Designed By:</string>
+    <string name="Back">Back</string>
+    <string name="back">back</string>
 </resources>

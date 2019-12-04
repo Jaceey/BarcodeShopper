@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/ShoppingHelper.iml" filepath="$PROJECT_DIR$/ShoppingHelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/ShoppingHelper-app.iml" filepath="$PROJECT_DIR$/app/ShoppingHelper-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src-ShoppingHelper.iml" filepath="$PROJECT_DIR$/src-ShoppingHelper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/src-ShoppingHelper-app.iml" filepath="$PROJECT_DIR$/app/src-ShoppingHelper-app.iml" />
     </modules>
   </component>
 </project>
