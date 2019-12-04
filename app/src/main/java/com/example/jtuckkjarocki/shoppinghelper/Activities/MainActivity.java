@@ -346,6 +346,11 @@ public class MainActivity extends AppCompatActivity implements ProductAdapter.On
 
     }
 
+    public void onClickAbout(View view){
+        Intent intent = new Intent(this,AboutActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onProductClick(int position) {
         Log.d(TAG, "onProductClick: " + productNames.get(position));
